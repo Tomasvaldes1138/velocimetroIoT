@@ -17,6 +17,7 @@
 
 <script>
 import axios from 'axios';
+import router from '../router';
 
 export default {
   name: 'loginComponent',
@@ -37,7 +38,9 @@ export default {
       })
       .then(response => {
         // Maneja la respuesta de la API
-        console.log(response.data); // Aquí puedes realizar acciones adicionales con la respuesta, como guardar el token de sesión, redirigir a otra vista, etc.
+        console.log(response.data);
+        router.push('/dashboard');
+        // Aquí puedes realizar acciones adicionales con la respuesta, como guardar el token de sesión, redirigir a otra vista, etc.
       })
       .catch(error => {
         // Maneja el error de la petición
