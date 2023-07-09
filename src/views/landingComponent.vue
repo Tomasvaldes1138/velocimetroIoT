@@ -1,7 +1,8 @@
+/* eslint-disable */
 <template>
   <div class="landing-page">
     <div class="sidebar d-flex flex-column">
-      <button class="btn btn-primary mb-2">Login</button>
+      <button class="btn btn-primary mb-2" @click="goToLogin">Login</button>
       <button class="btn btn-primary">Sign Up</button>
     </div>
     <div class="content">
@@ -12,8 +13,15 @@
 </template>
 
 <script>
+import router from '../router';
+
 export default {
-  name: 'landingVue'
+  name: 'landingComponent',
+  methods: {
+    goToLogin() {
+      router.push('/login');
+    }
+  } 
 }
 </script>
 

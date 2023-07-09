@@ -1,16 +1,14 @@
 <template>
-  <landingVue/>
+  <router-view></router-view>
   
 </template>
 
 <script>
-import landingVue from './components/vistas/landingVue.vue';
+
 
 export default {
   name: 'App',
-  components: {
-    landingVue
-  }
+
 }
 </script>
 
