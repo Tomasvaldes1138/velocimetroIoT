@@ -68,7 +68,14 @@ export default {
                 }, (error) => {
                     console.log(error);
                 });
+        },
+        // Vista de destino
+        created() {
+        const token = this.$store.state.token;
+        // Hacer algo con el token
         }
+
+        
     }
 }
 </script>
