@@ -10,7 +10,7 @@
         <label for="password">Password</label>
         <input v-model="password" type="password" class="form-control" id="password" />
       </div>
-      <button type="submit" class="btn btn-primary">Login</button>
+      <button type="submit" class="btn btn-primary" @click="submitForm">Login</button>
     </form>
   </div>
 </template>
@@ -39,8 +39,11 @@ export default {
       .then(response => {
         // Maneja la respuesta de la API
         console.log(response.data);
+        const token = response.data.token;
+        // Vista de origen
+        this.$store.commit('setToken', token);
         router.push('/dashboard');
-        // Aquí puedes realizar acciones adicionales con la respuesta, como guardar el token de sesión, redirigir a otra vista, etc.
+        // Aquí puedes realizar acciones adicionales con la respuesta, como guardar el token de sesión, redirigir a otra vista, etc.       
       })
       .catch(error => {
         // Maneja el error de la petición
