@@ -41,7 +41,7 @@ export default {
         console.log(response.data);
         const token = response.data.token;
         // Vista de origen
-        this.$store.commit('setToken', token);
+        localStorage.setItem('token', token);
         router.push('/dashboard');
         // Aquí puedes realizar acciones adicionales con la respuesta, como guardar el token de sesión, redirigir a otra vista, etc.       
       })

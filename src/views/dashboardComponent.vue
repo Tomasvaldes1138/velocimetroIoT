@@ -1,48 +1,49 @@
+/* eslint-disable */
 <template>
     <div class="container-fluid d-flex">
-   
-<div class="col-md-3">
-        <!-- Sidebar  -->
-        <nav id="sidebar">
-            <div class="sidebar-header">
-                <h3>Home</h3>
+
+        <div class="col-md-3">
+            <!-- Sidebar  -->
+            <nav id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Dashboard</h3>
+                </div>
+
+                <ul class="list-unstyled components">
+                    <li>
+                        <a href="#">Home</a>
+                    </li>
+
+                    <li>
+                        <a @Click="this.cerrarSesion()" >Cerrar Sesión</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="data col-lg-6 align-items-center">
+            <h2> Datos Actuales</h2>
+            <div class="row my-5 text-start">
+                <h4>Velocidad</h4>
+                <div class="info border">
+                    <p>{{velocidadValues }} m/s</p>
+                </div>
             </div>
-
-            <ul class="list-unstyled components">
-                <li>
-                    <a href="#">Home</a>
-                </li>
-             
-                <li>
-                    <a href="#">Cerrar Sesión</a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-<div class="data col-lg-6 align-items-center">
-    <h2> Datos Actuales</h2>
-    <div class="row my-5 text-start">
-        <h4 >Velocidad</h4>
-        <div class="info border">
-            <p>10 Kilometros por hora</p>
+            <div class="row  my-5 text-start">
+                <h4>Distancia Recorrida</h4>
+                <div class="info border">
+                    <p>{{ distRecorridaValues }}m</p>
+                </div>
+            </div>
+            <div class="row  my-5 text-start">
+                <h4>Velocidad máxima</h4>
+                <div class="info border">
+                    <p>{{ velocidadMaxima }}m/s</p>
+                </div>
+            </div>
         </div>
-    </div>
-    <div class="row  my-5 text-start">
-        <h4>Distancia Recorrida</h4>
-        <div class="info border">
-            <p>10 Kilometros</p>
-        </div>
-    </div>
-    <div class="row  my-5 text-start" >
-        <h4>Velocidad máxima</h4>
-        <div class="info border">
-            <p>10 Kilometros por hora</p>
-        </div>
-    </div>
-</div>
 
 
-</div>
+    </div>
 </template>
 
 <script>
@@ -51,43 +52,65 @@ export default {
     name: 'dashboardComponent',
     data() {
         return {
-            username: '',
-            email: '',
-            password: ''
+            distRecorridaValues: '',
+            velocidadValues: '',
+            velocidadMaxima: ''
         }
     },
-    methods: {
-        register() {
-            axios.post('http://localhost:3000/register', {
-                username: this.username,
-                email: this.email,
-                password: this.password
-            })
-                .then((response) => {
-                    console.log(response);
-                }, (error) => {
-                    console.log(error);
-                });
-        },
-        // Vista de destino
+        //No se ejecuta al iniciar el dashboard
         created() {
-        const token = this.$store.state.token;
-        // Hacer algo con el token
-        }
+            const token = localStorage.getItem('token');
+            const url='http://iot.ceisufro.cl:8080/api/plugins/telemetry/DEVICE/1e2a1770-0afe-11ee-b199-3d650e5455ce/values/timeseries'
+            setInterval(() => this.getValues(url, token), 500);
+        },
+        methods: {
+        getValues(url, token) {
+            axios.get(url, {
+                headers: {
+                    'X-Authorization': 'Bearer ' + token
+                }
+            })
+                .then(response => {
+                    const data = response.data;
+                    this.distRecorridaValues = data.distRecorrida[0].value;
+                    this.velocidadValues = data.velocidad[0].value;
+                    const floatVel=parseFloat(this.velocidadValues)
+                    const floatVelMax=parseFloat(this.velocidadMaxima)
+                    console.log(floatVel, floatVelMax)
 
-        
+                    if (this.velocidadMaxima){
+                        if(floatVel>floatVelMax){
+                            console.log(this.velocidadValues)
+                            this.velocidadMaxima = this.velocidadValues;
+                        }
+                    }
+                    else{
+                        this.velocidadMaxima = data.velocidad[0].value;
+
+                    }
+                })
+                .catch(error => {
+                    console.error('Error al obtener los valores:', error.message);
+                });
+
+            },
+            cerrarSesion(){
+                localStorage.removeItem('token');
+                this.$router.push('/');
+            }
     }
 }
 </script>
 
 <style>
-
 @import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
+
 body {
     font-family: 'Poppins', sans-serif;
     background: #fafafa;
 }
-.data{
+
+.data {
     margin-top: 40px;
 }
 
@@ -97,7 +120,7 @@ p {
 }
 
 
-.container-fluid a{
+.container-fluid a {
     color: inherit;
     text-decoration: none;
     transition: all 0.3s;
@@ -211,9 +234,11 @@ a.article:hover {
     #sidebar {
         margin-left: -250px;
     }
+
     #sidebar.active {
         margin-left: 0;
     }
+
     #sidebarCollapse span {
         display: none;
     }
